@@ -1,0 +1,9 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+.toast-container {
+    position: absolute;
+    z-index: 999999;
+  }
