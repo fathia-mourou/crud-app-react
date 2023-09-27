@@ -2,6 +2,7 @@ import $api from '../helpers/api'
 
 import { createContext, useState, useEffect, useMemo } from 'react'
 import { useCookies } from 'react-cookie';
+import Cookies from 'js-cookie'
 
 
 
@@ -10,12 +11,16 @@ export const UserContext = createContext({
     user : null,
     token: null,
     isAuthenticated : false,
+    subs: [],
 
     loadProfile : ()=>0,
     logout : ()=>0,
     subscribe : ()=>0,
     login : ()=>0,
     register : ()=>0,
+    sub: ()=>0,
+    deleteSub: ()=>0,
+
 })
 
 const UserProvider = ({children}) =>{
@@ -23,6 +28,7 @@ const UserProvider = ({children}) =>{
     const [user,setUser] = useState(null)
     const [cookies , removeCookie] = useCookies(['auth_token'])
     const [token,setToken] = useState(cookies.auth_token)
+    const [subs,setSubs] = useState([])
 
     const isAuthenticated = useMemo(()=>{
         setToken(cookies.auth_token)
@@ -32,6 +38,7 @@ const UserProvider = ({children}) =>{
     const logout = ()=>{
         removeCookie('auth_token')
         setUser(null)
+        Cookies.remove('auth_token')
 
     }
 
@@ -41,8 +48,16 @@ const UserProvider = ({children}) =>{
             return
         }
         // TODO : get user profile
-        const { data } = await $api.get("/")
-        setUser( data )
+        const res = await $api.get("/me")
+        if(res.status == 401){
+            setUser(null)
+        Cookies.remove('auth_token')
+        removeCookie('auth_token')
+
+        }else {
+
+            setUser( res.data.user )
+        }
     }
 
     const subscribe = async (subID,startDate) => {
@@ -63,13 +78,49 @@ const UserProvider = ({children}) =>{
         })
         setUser(data.user)
         setToken(data.token)
+        Cookies.set('auth_token',data.token)
     }
-    const register = async (username,password)=>{
+    const register = async ({firstName, lastName , phone, email, password})=>{
         // TODO : register user
+        const { data } = await $api.post('register',{
+         firstName,
+         lastName,
+         phone,
+         email,
+        password
+        })
+        setUser(data.user)
+        setToken(data.token)
+        Cookies.set('auth_token',data.token)
+
     }
 
+    const getSubs = async ()=>{
 
+        const { data } = await $api.get('subscriptions')
+        setSubs(data.subscriptions)
+    }
+    const sub = async (id)=>{
 
+        const {data} = await $api.post('subscribe',{
+            subscriptionId:id,
+            startDate: new Date()
+        })
+        setUser(data.user)
+    }
+    const deleteSub = async (id)=>{
+        const {data} = await $api.put('subscription',{
+            subId:id
+        })
+        setUser(data.user)
+    }
+
+    useEffect(()=>{
+        getSubs()
+        if(token && !user){
+            loadProfile()
+        }
+    },[user])
 
     return (
         <UserContext.Provider
@@ -82,6 +133,9 @@ const UserProvider = ({children}) =>{
             subscribe,
             login,
             register,
+            subs,
+            sub,
+            deleteSub,
 
         }}
         >

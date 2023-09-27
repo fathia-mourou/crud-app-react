@@ -5,6 +5,13 @@ const bcrypt = require('bcryptjs')
 const addDays = require('../helpers/addDays')
 const compareDates = require('../helpers/compareDate')
 
+
+const getProfile = async (req,res ) => {
+    const user = await MUser.findById(req.user._id)
+    res.status(200).json({
+        user
+    })
+}
 const register = async (req,res)=>{
 
     const { firstName, lastName , phone, email, password } = req.body
@@ -114,5 +121,6 @@ module.exports = {
     login,
     addSubscription,
     deleteSubscription,
-    updateSubscription
+    updateSubscription,
+    getProfile
 }

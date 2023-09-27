@@ -32,7 +32,7 @@ const userSchema = new Schema({
         subscription:{
             type: Schema.Types.ObjectId,
             ref:"Subscription",
-            autoPopulate : true
+            autopopulate : true
         },
         startDate: {
             type: Date,

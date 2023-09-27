@@ -2,21 +2,21 @@ import axios from 'axios';
 import Cookies from 'js-cookie'
 import { toast } from 'react-toastify'
 const $api = axios.create({
-    baseURL: 'https://jsonplaceholder.typicode.com/todos/'
+    baseURL: 'http://127.0.0.1:3001/api/'
 
 })
 $api.interceptors.request.use(config=>{
-
+    
     if(Cookies.get('auth_token')){
-        if(!config.headers.get('Authorization')){
-            config.headers.set('Authorization', `Bearer ${Cookies.get('auth_token')}`)
+        if(!config.headers.get('authorization')){
+            config.headers.set('authorization', `${Cookies.get('auth_token')}`)
         }
     }
     return config
 })
 
 $api.interceptors.response.use(res => {return res },err=>{
-toast(err.response.data.message,{type : 'error'})
+    console.log(err);
 })
 
 

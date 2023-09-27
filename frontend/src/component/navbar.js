@@ -1,7 +1,11 @@
-import React from "react";
+import React,{useContext,useEffect} from "react";
 import { Navbar, NavbarBrand, NavbarContent, NavbarItem, Link, Button, NavbarMenuToggle, NavbarMenu, NavbarMenuItem } from "@nextui-org/react";
+import { UserContext } from "../context/user";
+
+
 function NavBar() {
     const [isMenuOpen, setIsMenuOpen] = React.useState(false);
+    const {user,logout} = useContext(UserContext)
 
     const menuItems = [
         "Home",
@@ -24,11 +28,11 @@ function NavBar() {
                 </NavbarContent>
 
                 <NavbarContent className="hidden sm:flex gap-4" justify="center">
-                    <NavbarItem>
-                        <Link color="foreground" href="/" aria-current="page">
-                            Home
+                    {!!user&& <NavbarItem>
+                        <Link color="foreground" href="/dashboard" aria-current="page">
+                            Dashboard
                         </Link>
-                    </NavbarItem>
+                    </NavbarItem> }
                     <NavbarItem>
                         <Link color="foreground" href="/subscriptions" >
                             Subscriptions
@@ -40,16 +44,33 @@ function NavBar() {
                         </Link>
                     </NavbarItem>
                 </NavbarContent>
-                <NavbarContent justify="end">
+                {user==null && 
+                                <NavbarContent justify="end">
+                                <NavbarItem className="hidden lg:flex">
+                                    <Link href="/login">Login</Link>
+                                </NavbarItem>
+                                <NavbarItem>
+                                <Link href="/register">
+                                    <Button color="secondary" href="#" variant="flat">
+                                        Sign Up
+                                    </Button>
+                                    </Link>
+                                </NavbarItem>
+                            </NavbarContent>
+                }
+                {
+                    !!user && 
+                    <NavbarContent justify="end">
                     <NavbarItem className="hidden lg:flex">
-                        <Link href="#">Login</Link>
+                        <Button color="secondary" href="#" variant="flat" onClick={e=>{
+                            e.preventDefault()
+                            logout()
+                        }}>Logout</Button>
                     </NavbarItem>
-                    <NavbarItem>
-                        <Button as={Link} color="secondary" href="#" variant="flat">
-                            Sign Up
-                        </Button>
-                    </NavbarItem>
-                </NavbarContent>
+                    </NavbarContent>
+
+
+                }
                 <NavbarMenu>
                     {menuItems.map((item, index) => (
                         <NavbarMenuItem key={`${item}-${index}`}>

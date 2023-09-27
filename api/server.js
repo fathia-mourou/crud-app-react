@@ -26,7 +26,7 @@ app.use(bodyParser.urlencoded({extended:false}))
 app.use('/api',PublicRouter)
 app.use('/api', privateRoute)
 
-routePrinter(app)
+app.use(routePrinter(app))
 app.listen(process.env.PORT,()=>{
     console.log(`server is running on port ${process.env.PORT}`)
 })

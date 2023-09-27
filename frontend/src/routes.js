@@ -4,11 +4,8 @@ import Subscriptions from './component/Subscriptions'
 import Contact from './component/contact'
 import SignIn from './component/signIn'
 import UserDashboard from './component/userDashboard'
-
-
-
-
-
+import Login from './component/login'
+import Register from './component/register'
 
 const Router = createBrowserRouter([
 
@@ -31,10 +28,15 @@ const Router = createBrowserRouter([
         {
             path: '/dashboard',
             element: <UserDashboard/>
+        },
+        {
+            path: '/login',
+            element: <Login/>
+        },
+        {
+            path: '/register',
+            element: <Register/>
         }
-
-    
-
 ])
 
 export default Router
